@@ -19,7 +19,7 @@ public interface CategoryService {
 //    Category update(Category category);
 //
 //
-//    List<Category> findAllByActivated();
+    List<Category> findAllByActivated();
 
 //    /*Customer*/
 //    List<CategoryDto> getCategoryAndProduct();

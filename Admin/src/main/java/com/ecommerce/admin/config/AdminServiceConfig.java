@@ -23,7 +23,8 @@ public class AdminServiceConfig implements UserDetailsService {
         if (admin == null) {
             throw new UsernameNotFoundException("Could note found username");
         }
-        return new User(admin.getUsername(),
+        return new User(
+                admin.getUsername(),
                 admin.getPassword(),
                 admin.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList()));
     }

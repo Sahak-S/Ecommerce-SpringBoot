@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
 
@@ -33,7 +34,7 @@ public class LoginController {
         return "login";
     }
 
-    @GetMapping("/index")
+    @RequestMapping("/index")
     public String home(Model model) {
         model.addAttribute("title","Home Page");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
