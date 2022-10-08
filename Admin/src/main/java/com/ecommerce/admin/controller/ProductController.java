@@ -2,9 +2,11 @@ package com.ecommerce.admin.controller;
 
 import com.ecommerce.library.library.dto.ProductDto;
 import com.ecommerce.library.library.model.Category;
+import com.ecommerce.library.library.model.Product;
 import com.ecommerce.library.library.service.CategoryService;
 import com.ecommerce.library.library.service.ProductsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +29,7 @@ public class ProductController {
 
 
     @GetMapping("/products")
-    public String products(Model model, Principal principal){
+    public String products(Model model,Principal principal){
 //        if (principal == null){
 //            return "redirect:/login";
 //        }
@@ -38,7 +40,36 @@ public class ProductController {
         return "products";
     }
 
-    //
+        @GetMapping("/products/{pageNo}")
+    public String productsPage(@PathVariable("pageNo") int pageNo, Model model, Principal principal){
+//        if(principal == null){
+//            return "redirect:/login";
+//        }
+        Page<Product> products = productsService.pageProducts(pageNo);
+        model.addAttribute("title", "Manage Product");
+        model.addAttribute("size", products.getSize());
+        model.addAttribute("totalPages", products.getTotalPages());
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("products", products);
+        return "products";
+    }
+
+        @GetMapping("/search-result/{pageNo}")
+    public String searchProducts(@PathVariable("pageNo")int pageNo,
+                                 @RequestParam("keyword") String keyword,
+                                 Model model,
+                                 Principal principal){
+//        if(principal == null){
+//            return "redirect:/login";
+//        }
+        Page<Product> products = productsService.searchProducts(pageNo, keyword);
+        model.addAttribute("title", "Search Result");
+        model.addAttribute("products", products);
+        model.addAttribute("size", products.getSize());
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPages", products.getTotalPages());
+        return "result-products";
+    }
     @GetMapping("/add-product")
     public String addProductForm(Model model, Principal principal){
 //        if(principal == null){
@@ -131,25 +162,7 @@ attributes.addFlashAttribute("success","Add successfully");
 //        model.addAttribute("products", products);
 //        return "products";
 //    }
-//
-//    @GetMapping("/search-result/{pageNo}")
-//    public String searchProducts(@PathVariable("pageNo")int pageNo,
-//                                 @RequestParam("keyword") String keyword,
-//                                 Model model,
-//                                 Principal principal){
-//        if(principal == null){
-//            return "redirect:/login";
-//        }
-//        Page<ProductDto> products = productService.searchProducts(pageNo, keyword);
-//        model.addAttribute("title", "Search Result");
-//        model.addAttribute("products", products);
-//        model.addAttribute("size", products.getSize());
-//        model.addAttribute("currentPage", pageNo);
-//        model.addAttribute("totalPages", products.getTotalPages());
-//        return "result-products";
-//    }
-//
-//
+
 //    @GetMapping("/add-product")
 //    public String addProductForm(Model model, Principal principal){
 //        if(principal == null){

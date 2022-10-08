@@ -19,12 +19,6 @@
             <nav th:replace="fragments::topbar">
             </nav>
             <!-- End of Topbar -->
-            <div>
-                <form th:action="@{/search-result/0}" method="get">
-                    <input type="text"id="search" name="keyword" placeholder="Search products">
-                    <button type="submit" class="btn btn-primary">Search</button>
-                </form>
-            </div>
             <!-- Begin Page Content -->
             <div th:if="${size == 0}">
                 <p>No product is shop</p>
