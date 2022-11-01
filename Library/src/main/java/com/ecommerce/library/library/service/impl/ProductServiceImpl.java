@@ -7,6 +7,7 @@ import com.ecommerce.library.library.service.ProductsService;
 import com.ecommerce.library.library.utils.ImageUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,24 +28,11 @@ public class ProductServiceImpl implements ProductsService {
 
     @Override
     public List<ProductDto> findAll() {
-        List<ProductDto> productDtoList = new ArrayList<>();
         List<Product> products = productRepository.findAll();
-        for (Product product : products) {
-            ProductDto productDto = new ProductDto();
-            productDto.setId(product.getId());
-            productDto.setName(product.getName());
-            productDto.setDescription(product.getDescription());
-            productDto.setCostPrice(product.getCostPrice());
-            productDto.setSalePrice(product.getSalePrice());
-            productDto.setCurrentQuantity(product.getCurrentQuantity());
-            productDto.setImage(product.getImage());
-            productDto.setCategory(product.getCategory());
-            productDto.setDeleted(product.is_deleted());
-            productDto.setActivated(productDto.isActivated());
-            productDtoList.add(productDto);
-        }
+        List<ProductDto> productDtoList = transfer(products);
         return productDtoList;
     }
+
 
     @Override
     public Product save(MultipartFile imageProduct, ProductDto productDto) {
@@ -54,7 +42,7 @@ public class ProductServiceImpl implements ProductsService {
                 product.setImage(null);
             } else {
 //                imageUpload.uploadImage(imageProduct);
-                if (imageUpload.uploadImage(imageProduct)){
+                if (imageUpload.uploadImage(imageProduct)) {
                     System.out.println("Upload successfully");
                 }
                 product.setImage(Base64.getEncoder().encodeToString(imageProduct.getBytes()));
@@ -75,13 +63,13 @@ public class ProductServiceImpl implements ProductsService {
     }
 
     @Override
-    public Product update(MultipartFile imageProduct,ProductDto productDto) {
+    public Product update(MultipartFile imageProduct, ProductDto productDto) {
         try {
             Product product = productRepository.getById(productDto.getId());
-            if (imageProduct == null){
+            if (imageProduct == null) {
                 product.setImage(product.getImage());
-            }else {
-                if (imageUpload.checkExisted(imageProduct) == false){
+            } else {
+                if (imageUpload.checkExisted(imageProduct) == false) {
                     imageUpload.uploadImage(imageProduct);
                 }
                 product.setImage(Base64.getEncoder().encodeToString(imageProduct.getBytes()));
@@ -94,7 +82,7 @@ public class ProductServiceImpl implements ProductsService {
             product.setCategory(productDto.getCategory());
             return productRepository.save(product);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -135,16 +123,48 @@ public class ProductServiceImpl implements ProductsService {
     }
 
     @Override
-    public Page<Product> pageProducts(int pageNo) {
-        Pageable pageable = PageRequest.of(pageNo,5);
-        Page<Product> productPage = productRepository.pageProduct(pageable);
-        return productPage;
+    public Page<ProductDto> pageProducts(int pageNo) {
+        Pageable pageable = PageRequest.of(pageNo, 5);
+        List<ProductDto> products = transfer(productRepository.findAll());
+        Page<ProductDto> productPages = toPage(products,pageable);
+        return productPages;
     }
 
     @Override
-    public Page<Product> searchProducts(int pageNo, String keyword) {
-        Pageable pageable =PageRequest.of(pageNo,5);
-      Page<Product> products = productRepository.searchProducts(keyword,pageable);
-      return products;
+    public Page<ProductDto> searchProducts(int pageNo, String keyword) {
+        Pageable pageable = PageRequest.of(pageNo, 5);
+        List<ProductDto> productDtoList = transfer(productRepository.searchProductsList(keyword));
+        Page<ProductDto> products = toPage(productDtoList,pageable);
+        return products;
+    }
+
+    private Page toPage(List<ProductDto> list, Pageable pageable) {
+        if (pageable.getOffset() >= list.size()) {
+            return Page.empty();
+        }
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = ((pageable.getOffset() + pageable.getPageSize()) > list.size())
+                ? list.size() : (int) (pageable.getOffset() + pageable.getPageSize());
+        List subList = list.subList(startIndex, endIndex);
+        return new PageImpl(subList, pageable, list.size());
+    }
+
+    private List<ProductDto> transfer(List<Product> products) {
+        List<ProductDto> productDtoList = new ArrayList<>();
+        for (Product product : products) {
+            ProductDto productDto = new ProductDto();
+            productDto.setId(product.getId());
+            productDto.setName(product.getName());
+            productDto.setDescription(product.getDescription());
+            productDto.setCurrentQuantity(product.getCurrentQuantity());
+            productDto.setCategory(product.getCategory());
+            productDto.setSalePrice(product.getSalePrice());
+            productDto.setCostPrice(product.getCostPrice());
+            productDto.setImage(product.getImage());
+            productDto.setDeleted(product.is_deleted());
+            productDto.setActivated(product.is_activated());
+            productDtoList.add(productDto);
+        }
+        return productDtoList;
     }
 }
