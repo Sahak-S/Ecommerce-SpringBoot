@@ -2,9 +2,8 @@ package com.ecommerce.admin.controller;
 
 import com.ecommerce.library.library.dto.ProductDto;
 import com.ecommerce.library.library.model.Category;
-import com.ecommerce.library.library.model.Product;
 import com.ecommerce.library.library.service.CategoryService;
-import com.ecommerce.library.library.service.ProductsService;
+import com.ecommerce.library.library.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -20,7 +19,7 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
-    private ProductsService productsService;
+    private ProductService productsService;
 
 
 

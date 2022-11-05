@@ -14,7 +14,6 @@ import java.util.Arrays;
 
 @Service
 public class AdminServiceImpl implements AdminService {
-
     @Autowired
     private AdminRepository adminRepository;
 
@@ -29,9 +28,9 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Admin save(AdminDto adminDto) {
         Admin admin = new Admin();
-        admin.setFirstName(admin.getFirstName());
-        admin.setLastName(admin.getLastName());
-        admin.setUsername(admin.getUsername());
+        admin.setFirstName(adminDto.getFirstName());
+        admin.setLastName(adminDto.getLastName());
+        admin.setUsername(adminDto.getUsername());
         admin.setPassword(adminDto.getPassword());
         admin.setRoles(Arrays.asList(roleRepository.findByName("ADMIN")));
         return adminRepository.save(admin);
